@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vertex Air 360 — Limited Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #ffffff;
+      --surface:   #f7f7f7;
+      --surface2:  #efefef;
+      --border:    #e0e0e0;
+      --text:      #161616;
+      --muted:     #6f6f6f;
+      --gold:      #b5882a;
+      --gold-light:#f0d999;
+      --gold-bg:   #fdf6e3;
+      --green:     #198038;
+      --green-bg:  #defbe6;
+      --red:       #da1e28;
+      --blue:      #0f62fe;
+      --radius:    6px;
+      --transition: 0.2s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; border: none; outline: none; }
+    input  { font-family: inherit; outline: none; }
+
+    /* ── Header ──────────────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: #161616;
+      border-bottom: 1px solid #393939;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      height: 56px;
+    }
+
+    .logo {
+      font-size: 15px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: #f4f4f4;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-ibm {
+      font-family: 'IBM Plex Mono', monospace;
+      color: #78a9ff; font-size: 14px;
+    }
+
+    .nav-links { display: flex; gap: 0; }
+    .nav-links a {
+      font-size: 14px; font-weight: 400;
+      color: #c6c6c6; padding: 0 16px; height: 56px;
+      display: flex; align-items: center;
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-links a:hover { background: #2d2d2d; color: #f4f4f4; }
+
+    .header-right { display: flex; align-items: center; gap: 0; }
+
+    #cart-icon {
+      position: relative; background: none;
+      height: 56px; width: 56px;
+      display: flex; align-items: center; justify-content: center;
+      border-left: 1px solid #393939;
+      transition: background var(--transition);
+    }
+    #cart-icon:hover { background: #2d2d2d; }
+    #cart-icon svg { width: 20px; height: 20px; stroke: #f4f4f4; fill: none; stroke-width: 1.8; }
+
+    #cart-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: #0f62fe; color: #fff;
+      font-size: 10px; font-weight: 700;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.5);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    #cart-badge.visible { opacity: 1; transform: scale(1); }
+
+    /* ── Hero / Product Layout ───────────────────────────────────── */
+    .product-section {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 56px);
+      max-width: 1280px; margin: 0 auto;
+      padding: 64px 48px;
+      gap: 72px; align-items: center;
+    }
+
+    /* ── Product Image ───────────────────────────────────────────── */
+    .image-wrapper {
+      background: var(--surface);
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      aspect-ratio: 1 / 1;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #product-image {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .image-wrapper:hover #product-image { transform: scale(1.03); }
+
+    .image-badge {
+      position: absolute; top: 16px; left: 16px;
+      background: var(--gold); color: #fff;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 2px;
+    }
+
+    /* ── Product Details ─────────────────────────────────────────── */
+    .product-details { display: flex; flex-direction: column; gap: 24px; }
+
+    .product-category {
+      font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--blue);
+    }
+
+    .product-name {
+      font-size: 40px; font-weight: 300; line-height: 1.1;
+      letter-spacing: -0.01em; color: var(--text);
+    }
+    .product-name strong { font-weight: 700; }
+
+    .product-tagline { font-size: 14px; color: var(--muted); line-height: 1.75; }
+
+    .product-price-row { display: flex; align-items: baseline; gap: 12px; }
+    .product-price {
+      font-size: 32px; font-weight: 300; color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .product-price-note { font-size: 13px; color: var(--muted); }
+
+    .inventory-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--muted);
+      background: var(--green-bg);
+      border: 1px solid #a7f0ba;
+      border-radius: 2px; padding: 6px 12px;
+      width: fit-content;
+    }
+    .inventory-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+    }
+    #inventory-count { color: var(--green); font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+
+    /* ── Divider ─────────────────────────────────────────────────── */
+    .detail-divider { height: 1px; background: var(--border); }
+
+    /* ── Size Selector ───────────────────────────────────────────── */
+    .section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .size-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .size-btn {
+      width: 48px; height: 40px;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); border-radius: 2px;
+      font-size: 13px; font-weight: 400;
+      transition: all var(--transition);
+    }
+    .size-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .size-btn.selected {
+      background: var(--blue); border-color: var(--blue);
+      color: #fff; font-weight: 600;
+    }
+
+    /* ── Colour Chips ────────────────────────────────────────────── */
+    .colour-row { display: flex; gap: 8px; align-items: center; }
+    .colour-chip {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer; transition: border-color var(--transition);
+      box-shadow: 0 0 0 1px var(--border);
+    }
+    .colour-chip.active { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+    .colour-chip:hover  { border-color: var(--muted); }
+
+    /* ── Add to Cart Button ──────────────────────────────────────── */
+    #btn-add-to-cart {
+      width: 100%; padding: 14px;
+      background: var(--blue); color: #fff;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 0.02em;
+      border-radius: 2px;
+      transition: background var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    #btn-add-to-cart:hover  { background: #0353e9; }
+    #btn-add-to-cart:active { background: #002d9c; }
+    #btn-add-to-cart.added  { background: var(--green); }
+
+    /* ── Features ────────────────────────────────────────────────── */
+    .features { display: flex; gap: 20px; flex-wrap: wrap; }
+    .feature { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .feature svg { width: 14px; height: 14px; stroke: var(--green); fill: none; stroke-width: 2.5; flex-shrink: 0; }
+
+    /* ── Cart Drawer ─────────────────────────────────────────────── */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 200; opacity: 0; pointer-events: none;
+      transition: opacity var(--transition);
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    #cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 380px; background: var(--bg);
+      z-index: 201; display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      border-left: 1px solid var(--border);
+    }
+    #cart-drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .drawer-header h2 { font-size: 16px; font-weight: 600; }
+
+    .drawer-close {
+      background: none; padding: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--transition);
+      border-radius: 2px;
+    }
+    .drawer-close:hover { background: var(--surface2); }
+    .drawer-close svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2; }
+
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .cart-empty { color: var(--muted); font-size: 14px; text-align: center; margin-top: 48px; }
+
+    .cart-item {
+      display: grid; grid-template-columns: 64px 1fr; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .cart-item-thumb {
+      width: 64px; height: 64px; border-radius: 2px;
+      background: var(--surface); overflow: hidden; border: 1px solid var(--border);
+    }
+    .cart-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-item-details { display: flex; flex-direction: column; gap: 3px; }
+    .cart-item-name { font-size: 14px; font-weight: 600; }
+    .cart-item-meta { font-size: 12px; color: var(--muted); }
+    .cart-item-price { font-size: 14px; font-weight: 600; color: var(--text); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+    .drawer-footer { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface); }
+    .cart-subtotal {
+      display: flex; justify-content: space-between;
+      font-size: 15px; font-weight: 600; margin-bottom: 14px;
+    }
+    .cart-subtotal span:last-child { font-family: 'IBM Plex Mono', monospace; }
+
+    #btn-checkout {
+      width: 100%; padding: 14px;
+      background: var(--blue); color: #fff;
+      font-size: 14px; font-weight: 600;
+      border-radius: 2px;
+      transition: background var(--transition);
+    }
+    #btn-checkout:hover { background: #0353e9; }
+
+    /* ── Checkout Modal ──────────────────────────────────────────── */
+    #checkout-modal {
+      position: fixed; inset: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(22,22,22,0.6);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    #checkout-modal.open { opacity: 1; pointer-events: all; }
+
+    .modal-box {
+      background: var(--bg); border: 1px solid var(--border);
+      width: 100%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 600; }
+
+    #btn-close-modal {
+      background: none; padding: 6px; border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--transition);
+    }
+    #btn-close-modal:hover { background: var(--surface2); }
+    #btn-close-modal svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2; }
+
+    /* Step indicator */
+    .step-indicator {
+      display: flex; align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      gap: 0;
+    }
+    .step-dot {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .step-dot.active  { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .step-dot.done    { background: var(--green); border-color: var(--green); color: #fff; }
+    .step-line {
+      flex: 1; height: 1px; background: var(--border);
+      transition: background 0.2s;
+    }
+    .step-line.done { background: var(--green); }
+
+    /* Form */
+    .modal-form { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .step-panel { display: none; flex-direction: column; gap: 14px; }
+    .step-panel.active { display: flex; }
+
+    /* Address row: two equal columns for city+state, separate row for zip */
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .form-group input {
+      background: var(--bg); border: 1px solid #8d8d8d;
+      border-bottom-color: var(--text);
+      color: var(--text);
+      padding: 9px 12px; font-size: 14px;
+      transition: border-color var(--transition), outline var(--transition);
+    }
+    .form-group input:focus {
+      outline: 2px solid var(--blue); outline-offset: 0;
+      border-color: transparent;
+    }
+    .form-group input.error { border-color: var(--red) !important; outline: none; }
+
+    .form-section-title {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding-bottom: 6px; border-bottom: 1px solid var(--border);
+    }
+
+    /* Card icons row */
+    .card-icons { display: flex; gap: 6px; align-items: center; margin-top: -6px; }
+    .card-icon-chip {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 2px; padding: 3px 8px;
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .card-icon-chip.detected { border-color: var(--blue); color: var(--blue); background: #edf5ff; }
+
+    /* Order summary in modal */
+    .order-summary-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex; justify-content: space-between;
+      font-size: 14px;
+    }
+    .order-summary-bar span:last-child {
+      font-weight: 600; font-family: 'IBM Plex Mono', monospace; color: var(--text);
+    }
+
+    /* Buttons */
+    .modal-actions { display: flex; gap: 10px; margin-top: 2px; }
+
+    .btn-primary {
+      flex: 1; padding: 12px;
+      background: var(--blue); color: #fff;
+      font-size: 14px; font-weight: 600;
+      border-radius: 2px;
+      transition: background var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #0353e9; }
+    .btn-primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+    .btn-secondary {
+      padding: 12px 18px;
+      background: transparent; color: var(--text);
+      font-size: 14px; font-weight: 600;
+      border: 1px solid var(--border); border-radius: 2px;
+      transition: all var(--transition);
+    }
+    .btn-secondary:hover { background: var(--surface2); }
+
+    /* Spinner */
+    #spinner-checkout {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Confirmation Panel ───────────────────────────────────────── */
+    #confirmation-panel {
+      display: none; flex-direction: column;
+      align-items: center; text-align: center;
+      padding: 32px 24px;
+      gap: 16px;
+    }
+    #confirmation-panel.active { display: flex; }
+
+    .confirm-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--green-bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .confirm-icon svg { width: 28px; height: 28px; stroke: var(--green); fill: none; stroke-width: 2.5; }
+
+    .confirm-title { font-size: 18px; font-weight: 600; }
+    .confirm-subtitle { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    .confirm-order-box {
+      background: var(--surface); border: 1px solid var(--border);
+      width: 100%;
+      display: flex; flex-direction: column;
+    }
+    .confirm-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 10px 16px; gap: 12px;
+    }
+    .confirm-divider { height: 1px; background: var(--border); }
+    .confirm-order-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .confirm-value {
+      font-size: 13px; color: var(--text); text-align: right;
+    }
+    .confirm-value-mono {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      font-family: 'IBM Plex Mono', monospace; text-align: right;
+    }
+    #order-confirmation-number {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .confirm-status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #fdf6d3; color: #7d5900;
+      border-radius: 20px; padding: 2px 10px;
+      font-size: 11px; font-weight: 600;
+    }
+
+    .confirm-actions { display: flex; gap: 10px; width: 100%; }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .product-section { grid-template-columns: 1fr; padding: 32px 20px; gap: 40px; }
+      header { padding: 0 20px; }
+      .nav-links { display: none; }
+      #cart-drawer { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════ -->
+<header>
+  <div class="logo">
+    <span class="logo-ibm">IBM</span>
+    Vertex Air
+  </div>
+  <nav class="nav-links">
+    <a href="#">Collection</a>
+    <a href="#">Technology</a>
+    <a href="#">About</a>
+  </nav>
+  <div class="header-right">
+    <button id="cart-icon" aria-label="Open cart">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span id="cart-badge">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     PRODUCT SECTION
+══════════════════════════════════════════════ -->
+<main>
+  <section class="product-section">
+
+    <!-- Left: Image -->
+    <div class="image-wrapper">
+      <img id="product-image" src="assets/sneaker-placeholder.jpg"
+           alt="Vertex Air 360 Limited Edition Sneaker"
+           onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex'" />
+      <!-- SVG fallback shown when real image is missing -->
+      <div class="img-fallback" style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; width:100%; height:100%;">
+        <svg viewBox="0 0 120 80" style="width:180px; opacity:0.35;" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 55 C10 55 25 20 55 22 C75 23 85 40 100 38 C110 37 115 42 112 52 C110 58 100 62 80 63 C55 64 20 65 10 55Z" fill="#0f62fe" opacity="0.5"/>
+          <path d="M25 55 C30 45 45 28 60 28 C72 28 78 38 88 40" stroke="#161616" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+          <circle cx="28" cy="60" r="7" fill="#e0e0e0" stroke="#0f62fe" stroke-width="2"/>
+          <circle cx="90" cy="58" r="7" fill="#e0e0e0" stroke="#0f62fe" stroke-width="2"/>
+        </svg>
+        <span style="color:#6f6f6f; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:500;">Vertex Air 360</span>
+      </div>
+      <span class="image-badge">Limited Edition</span>
+    </div>
+
+    <!-- Right: Details -->
+    <div class="product-details">
+      <div class="product-category">Footwear · 2025 Drop</div>
+
+      <h1 class="product-name">Vertex Air <strong>360</strong></h1>
+
+      <p class="product-tagline">
+        Engineered for the relentless. The Air 360 wraps your foot in full-contact
+        cushioning with a premium leather upper and reactive sole technology
+        that adapts to every surface.
+      </p>
+
+      <div class="product-price-row">
+        <div class="product-price">$349</div>
+        <div class="product-price-note">Free shipping · Easy returns</div>
+      </div>
+
+      <div class="inventory-row">
+        <span class="inventory-dot"></span>
+        <span>In stock:&nbsp;</span>
+        <span id="inventory-count">—</span>
+        <span>&nbsp;pairs available</span>
+      </div>
+
+      <div class="detail-divider"></div>
+
+      <!-- Sizes -->
+      <div>
+        <div class="section-label">Select Size (US)</div>
+        <div class="size-grid">
+          <button class="size-btn" id="size-7"  data-size="7">7</button>
+          <button class="size-btn" id="size-8"  data-size="8">8</button>
+          <button class="size-btn" id="size-9"  data-size="9">9</button>
+          <button class="size-btn" id="size-10" data-size="10">10</button>
+          <button class="size-btn" id="size-11" data-size="11">11</button>
+          <button class="size-btn" id="size-12" data-size="12">12</button>
+          <button class="size-btn" id="size-13" data-size="13">13</button>
+        </div>
+      </div>
+
+      <!-- Colours -->
+      <div>
+        <div class="section-label">Colour — <span id="colour-label" style="color:var(--text);text-transform:none;font-weight:400;letter-spacing:0;">Cloud White</span></div>
+        <div class="colour-row">
+          <div class="colour-chip active" style="background:#f5f5f5;" data-colour="Cloud White"   title="Cloud White"></div>
+          <div class="colour-chip"        style="background:#0f62fe;" data-colour="Cobalt Blue"   title="Cobalt Blue"></div>
+          <div class="colour-chip"        style="background:#161616;" data-colour="Matte Black"   title="Matte Black"></div>
+          <div class="colour-chip"        style="background:#b5882a;" data-colour="Desert Gold"   title="Desert Gold"></div>
+        </div>
+      </div>
+
+      <!-- Add to Cart -->
+      <button id="btn-add-to-cart">Add to Cart</button>
+
+      <!-- Features -->
+      <div class="features">
+        <div class="feature">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Full-grain leather
+        </div>
+        <div class="feature">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Air 360 cushioning
+        </div>
+        <div class="feature">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Carbon-fibre shank
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- ══════════════════════════════════════════════
+     CART DRAWER
+══════════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+
+<aside id="cart-drawer" aria-label="Shopping cart">
+  <div class="drawer-header">
+    <h2>Your Cart</h2>
+    <button class="drawer-close" id="btn-close-drawer" aria-label="Close cart">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+    <p class="cart-empty" id="cart-empty-msg">Your cart is empty.</p>
+    <div id="cart-items-list"></div>
+  </div>
+
+  <div class="drawer-footer">
+    <div class="cart-subtotal">
+      <span>Subtotal</span>
+      <span id="cart-subtotal-amount">$0.00</span>
+    </div>
+    <button id="btn-checkout">Proceed to Checkout</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════════
+     CHECKOUT MODAL
+══════════════════════════════════════════════ -->
+<div id="checkout-modal" role="dialog" aria-modal="true" aria-label="Checkout">
+  <div class="modal-box">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>Checkout</h2>
+      <button id="btn-close-modal" aria-label="Close checkout">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="step-dot-1">1</div>
+      <div class="step-line" id="step-line-1"></div>
+      <div class="step-dot" id="step-dot-2">2</div>
+      <div class="step-line" id="step-line-2"></div>
+      <div class="step-dot" id="step-dot-3">✓</div>
+    </div>
+
+    <!-- Form Area -->
+    <div class="modal-form">
+
+      <!-- ── Step 1: Shipping ── -->
+      <div class="step-panel active" id="step-1-panel">
+        <div class="form-section-title">Shipping Information</div>
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="input-name">Full Name</label>
+          <input id="input-name" type="text" placeholder="Jane Doe" autocomplete="name" />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="input-email">Email Address</label>
+          <input id="input-email" type="email" placeholder="jane@example.com" autocomplete="email" />
+        </div>
+
+        <!-- Street Address -->
+        <div class="form-group">
+          <label for="input-address">Street Address</label>
+          <input id="input-address" type="text" placeholder="123 Main Street" autocomplete="street-address" />
+        </div>
+
+        <!-- City + State side by side -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="input-city">City</label>
+            <input id="input-city" type="text" placeholder="New York" autocomplete="address-level2" />
+          </div>
+          <div class="form-group">
+            <label for="input-state">State</label>
+            <input id="input-state" type="text" placeholder="NY" maxlength="2" autocomplete="address-level1" />
+          </div>
+        </div>
+
+        <!-- ZIP on its own row -->
+        <div class="form-group">
+          <label for="input-zip">ZIP / Postal Code</label>
+          <input id="input-zip" type="text" placeholder="10001" maxlength="10" autocomplete="postal-code" />
+        </div>
+
+        <div class="order-summary-bar">
+          <span>Vertex Air 360 × 1</span>
+          <span>$349.00</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-cancel-checkout" type="button">Cancel</button>
+          <button class="btn-primary" id="btn-next-step" type="button">Continue to Payment</button>
+        </div>
+      </div>
+
+      <!-- ── Step 2: Payment ── -->
+      <div class="step-panel" id="step-2-panel">
+        <div class="form-section-title">Payment Details</div>
+
+        <div class="form-group">
+          <label for="input-card-number">Card Number</label>
+          <input id="input-card-number" type="tel" placeholder="1234 5678 9012 3456"
+                 maxlength="19" autocomplete="cc-number" />
+        </div>
+
+        <div class="card-icons">
+          <div class="card-icon-chip" id="chip-visa">VISA</div>
+          <div class="card-icon-chip" id="chip-mc">MC</div>
+          <div class="card-icon-chip" id="chip-amex">AMEX</div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="input-card-expiry">Expiry (MM/YY)</label>
+            <input id="input-card-expiry" type="tel" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" />
+          </div>
+          <div class="form-group">
+            <label for="input-card-cvv">CVV</label>
+            <input id="input-card-cvv" type="tel" placeholder="123" maxlength="4" autocomplete="cc-csc" />
+          </div>
+        </div>
+
+        <div class="order-summary-bar">
+          <span>Total (incl. free shipping)</span>
+          <span>$349.00</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-back-step" type="button">Back</button>
+          <button class="btn-primary" id="btn-place-order" type="button">
+            <span id="spinner-checkout"></span>
+            <span id="place-order-label">Place Order</span>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /modal-form -->
+
+    <!-- ── Confirmation Panel ── -->
+    <div id="confirmation-panel">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="confirm-title">Thank you for your order</div>
+      <p class="confirm-subtitle">
+        A confirmation has been sent to <strong id="confirm-email">your email</strong>.
+      </p>
+
+      <div class="confirm-order-box">
+        <div class="confirm-row">
+          <div class="confirm-order-label">Order number</div>
+          <div id="order-confirmation-number" class="confirm-value-mono">—</div>
+        </div>
+        <div class="confirm-divider"></div>
+        <div class="confirm-row">
+          <div class="confirm-order-label">Item</div>
+          <div class="confirm-value">Vertex Air 360 &times; 1</div>
+        </div>
+        <div class="confirm-row">
+          <div class="confirm-order-label">Amount charged</div>
+          <div class="confirm-value-mono">$349.00</div>
+        </div>
+        <div class="confirm-row">
+          <div class="confirm-order-label">Ship to</div>
+          <div class="confirm-value" id="confirm-address">—</div>
+        </div>
+        <div class="confirm-row">
+          <div class="confirm-order-label">Estimated delivery</div>
+          <div class="confirm-value" id="confirm-delivery">—</div>
+        </div>
+        <div class="confirm-divider"></div>
+        <div class="confirm-row">
+          <div class="confirm-order-label">Status</div>
+          <div class="confirm-status-pill">● Processing</div>
+        </div>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="btn-primary" id="btn-done" type="button">Continue Shopping</button>
+      </div>
+    </div>
+
+  </div><!-- /modal-box -->
+</div><!-- /checkout-modal -->
+
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+  // ── CONFIG ───────────────────────────────────────────────────────
+  const API_BASE = 'http://localhost:8000';
+  // To deploy to AWS: replace with your API Gateway Invoke URL
+  // e.g. const API_BASE = 'https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod';
+
+  const PRODUCT_PRICE = 349;
+
+  // ── State ─────────────────────────────────────────────────────────
+  const cart = { quantity: 0, size: null, colour: 'Cloud White' };
+
+  // ── Utility ───────────────────────────────────────────────────────
+  const $  = id => document.getElementById(id);
+  const qs = sel => document.querySelector(sel);
+
+  // ── Load / Refresh Inventory Count ───────────────────────────────
+  async function loadInventory() {
+    try {
+      const res = await fetch(`${API_BASE}/inventory/VERTEX-AIR-360`);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, 'application/xml');
+      const qty = xml.querySelector('QuantityOnHand');
+      if (qty) {
+        $('inventory-count').textContent = parseInt(qty.textContent, 10).toLocaleString();
+      }
+    } catch (e) {
+      $('inventory-count').textContent = '—';
+    }
+  }
+
+  // ── Size Selection ────────────────────────────────────────────────
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      cart.size = btn.dataset.size;
+    });
+  });
+
+  // ── Colour Selection ──────────────────────────────────────────────
+  document.querySelectorAll('.colour-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.colour-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      cart.colour = chip.dataset.colour;
+      $('colour-label').textContent = chip.dataset.colour;
+    });
+  });
+
+  // ── Cart Drawer ───────────────────────────────────────────────────
+  function openDrawer() {
+    $('cart-drawer').classList.add('open');
+    $('drawer-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    $('cart-drawer').classList.remove('open');
+    $('drawer-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  $('cart-icon').addEventListener('click', openDrawer);
+  $('btn-close-drawer').addEventListener('click', closeDrawer);
+  $('drawer-overlay').addEventListener('click', closeDrawer);
+
+  function renderCart() {
+    const list     = $('cart-items-list');
+    const emptyMsg = $('cart-empty-msg');
+    const badge    = $('cart-badge');
+
+    if (cart.quantity === 0) {
+      list.innerHTML = '';
+      emptyMsg.style.display = 'block';
+      badge.classList.remove('visible');
+      $('cart-subtotal-amount').textContent = '$0.00';
+      return;
+    }
+
+    emptyMsg.style.display = 'none';
+    badge.textContent = cart.quantity;
+    badge.classList.add('visible');
+
+    const imgSrc = $('product-image').src;
+    list.innerHTML = `
+      <div class="cart-item">
+        <div class="cart-item-thumb">
+          <img src="${imgSrc}" alt="Vertex Air 360" onerror="this.style.display='none'"/>
+        </div>
+        <div class="cart-item-details">
+          <div class="cart-item-name">Vertex Air 360</div>
+          <div class="cart-item-meta">
+            Size: US ${cart.size || '—'} &nbsp;·&nbsp; ${cart.colour}<br/>
+            Qty: ${cart.quantity}
+          </div>
+          <div class="cart-item-price">$${(PRODUCT_PRICE * cart.quantity).toFixed(2)}</div>
+        </div>
+      </div>`;
+
+    $('cart-subtotal-amount').textContent = `$${(PRODUCT_PRICE * cart.quantity).toFixed(2)}`;
+  }
+
+  // ── Add to Cart ───────────────────────────────────────────────────
+  $('btn-add-to-cart').addEventListener('click', () => {
+    if (!cart.size) {
+      const sizeGrid = qs('.size-grid');
+      sizeGrid.animate([
+        { transform: 'translateX(-5px)' },
+        { transform: 'translateX(5px)' },
+        { transform: 'translateX(-3px)' },
+        { transform: 'translateX(3px)' },
+        { transform: 'translateX(0)' }
+      ], { duration: 280, easing: 'ease-out' });
+      return;
+    }
+    cart.quantity += 1;
+    renderCart();
+
+    const btn = $('btn-add-to-cart');
+    btn.textContent = '✓ Added to Cart';
+    btn.classList.add('added');
+    setTimeout(() => {
+      btn.textContent = 'Add to Cart';
+      btn.classList.remove('added');
+    }, 1800);
+
+    openDrawer();
+  });
+
+  // ── Checkout Modal ────────────────────────────────────────────────
+  let currentStep = 1;
+
+  function openCheckout() {
+    closeDrawer();
+    resetModal();
+    $('checkout-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCheckout() {
+    $('checkout-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  $('btn-checkout').addEventListener('click', openCheckout);
+  $('btn-close-modal').addEventListener('click', closeCheckout);
+  $('btn-cancel-checkout').addEventListener('click', closeCheckout);
+  $('btn-done').addEventListener('click', () => { closeCheckout(); });
+
+  $('checkout-modal').addEventListener('click', e => {
+    if (e.target === $('checkout-modal')) closeCheckout();
+  });
+
+  function resetModal() {
+    currentStep = 1;
+    showStep(1);
+    $('confirmation-panel').classList.remove('active');
+    $('confirmation-panel').style.display = 'none';
+    qs('.modal-form').style.display = 'flex';
+    qs('.modal-header').style.display = 'flex';
+    qs('.step-indicator').style.display = 'flex';
+    updateStepIndicator(1);
+    document.querySelectorAll('.form-group input').forEach(i => i.classList.remove('error'));
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    $(`step-${n}-panel`).classList.add('active');
+    currentStep = n;
+    updateStepIndicator(n);
+  }
+
+  function updateStepIndicator(n) {
+    for (let i = 1; i <= 3; i++) {
+      const dot  = $(`step-dot-${i}`);
+      const line = $(`step-line-${i}`);
+      if (i < n)  { dot.classList.add('done');   dot.classList.remove('active'); }
+      if (i === n){ dot.classList.add('active');  dot.classList.remove('done');  }
+      if (i > n)  { dot.classList.remove('done'); dot.classList.remove('active'); }
+      if (line) { i < n ? line.classList.add('done') : line.classList.remove('done'); }
+    }
+  }
+
+  $('btn-next-step').addEventListener('click', () => {
+    if (!validateStep1()) return;
+    showStep(2);
+  });
+  $('btn-back-step').addEventListener('click', () => showStep(1));
+
+  // Card number formatting + type detection
+  $('input-card-number').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 16);
+    e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
+    detectCardType(v);
+  });
+  $('input-card-expiry').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2);
+    e.target.value = v;
+  });
+  $('input-card-cvv').addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+  });
+
+  function detectCardType(num) {
+    ['chip-visa','chip-mc','chip-amex'].forEach(id => $(id).classList.remove('detected'));
+    if (num.startsWith('4'))       $('chip-visa').classList.add('detected');
+    else if (/^5[1-5]/.test(num)) $('chip-mc').classList.add('detected');
+    else if (/^3[47]/.test(num))  $('chip-amex').classList.add('detected');
+  }
+
+  function getCardType(num) {
+    if (num.startsWith('4'))       return 'Visa';
+    if (/^5[1-5]/.test(num))      return 'Mastercard';
+    if (/^3[47]/.test(num))       return 'Amex';
+    return 'Card';
+  }
+
+  function markError(id) {
+    const el = $(id);
+    el.classList.add('error');
+    el.addEventListener('input', () => el.classList.remove('error'), { once: true });
+  }
+
+  function validateStep1() {
+    let ok = true;
+    if (!$('input-name').value.trim())         { markError('input-name');    ok = false; }
+    if (!$('input-email').value.includes('@'))  { markError('input-email');   ok = false; }
+    if (!$('input-address').value.trim())       { markError('input-address'); ok = false; }
+    if (!$('input-city').value.trim())          { markError('input-city');    ok = false; }
+    if (!$('input-state').value.trim())         { markError('input-state');   ok = false; }
+    if (!$('input-zip').value.trim())           { markError('input-zip');     ok = false; }
+    return ok;
+  }
+
+  function validateStep2() {
+    let ok = true;
+    const raw = $('input-card-number').value.replace(/\s/g,'');
+    if (raw.length < 13)                              { markError('input-card-number'); ok = false; }
+    if (!$('input-card-expiry').value.includes('/'))  { markError('input-card-expiry'); ok = false; }
+    if ($('input-card-cvv').value.length < 3)         { markError('input-card-cvv');    ok = false; }
+    return ok;
+  }
+
+  // ── Place Order ───────────────────────────────────────────────────
+  $('btn-place-order').addEventListener('click', async () => {
+    if (!validateStep2()) return;
+
+    const rawCard   = $('input-card-number').value.replace(/\s/g, '');
+    const cardLast4 = rawCard.slice(-4);
+    const cardType  = getCardType(rawCard);
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<Order>
+  <ProductId>VERTEX-AIR-360</ProductId>
+  <Quantity>1</Quantity>
+  <Customer>
+    <Name>${escXml($('input-name').value.trim())}</Name>
+    <Email>${escXml($('input-email').value.trim())}</Email>
+    <AddressLine1>${escXml($('input-address').value.trim())}</AddressLine1>
+    <City>${escXml($('input-city').value.trim())}</City>
+    <State>${escXml($('input-state').value.trim())}</State>
+    <Zip>${escXml($('input-zip').value.trim())}</Zip>
+    <Country>US</Country>
+  </Customer>
+  <Payment>
+    <CardLast4>${cardLast4}</CardLast4>
+    <CardType>${cardType}</CardType>
+  </Payment>
+</Order>`;
+
+    $('spinner-checkout').style.display = 'block';
+    $('place-order-label').textContent  = 'Placing Order…';
+    $('btn-place-order').disabled       = true;
+
+    try {
+      const res = await fetch(`${API_BASE}/orders`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/xml' },
+        body:    xml,
+      });
+      const text = await res.text();
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(text, 'application/xml');
+      const orderId = xmlDoc.querySelector('OrderId');
+
+      if (!orderId) throw new Error('No OrderId in response');
+
+      const id = orderId.textContent;
+      sessionStorage.setItem('lastOrderId', id);
+
+      // ── Refresh inventory count so UI reflects the decrement ─────
+      await loadInventory();
+
+      // ── Fetch full order detail for the receipt ───────────────────
+      let deliveryText = '5–7 business days';
+      let addressText  = $('input-address').value.trim() + ', ' +
+                         $('input-city').value.trim() + ', ' +
+                         $('input-state').value.trim() + ' ' +
+                         $('input-zip').value.trim();
+      try {
+        const detailRes  = await fetch(`${API_BASE}/orders/latest`);
+        const detailText = await detailRes.text();
+        const detailXml  = new DOMParser().parseFromString(detailText, 'application/xml');
+        const delEl = detailXml.querySelector('EstimatedDelivery');
+        if (delEl) {
+          const d = new Date(delEl.textContent);
+          deliveryText = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+        }
+      } catch (_) { /* fall through — use defaults */ }
+
+      // Populate receipt fields
+      $('order-confirmation-number').textContent = id;
+      $('confirm-email').textContent  = $('input-email').value.trim();
+      $('confirm-address').textContent = addressText;
+      $('confirm-delivery').textContent = deliveryText;
+
+      // Show confirmation
+      qs('.modal-form').style.display    = 'none';
+      qs('.modal-header').style.display  = 'none';
+      qs('.step-indicator').style.display = 'none';
+      $('confirmation-panel').style.display = 'flex';
+      $('confirmation-panel').classList.add('active');
+      updateStepIndicator(3);
+
+    } catch (err) {
+      alert('Order failed: ' + err.message + '\n\nCheck that the local server is running on port 8000.');
+    } finally {
+      $('spinner-checkout').style.display = 'none';
+      $('place-order-label').textContent  = 'Place Order';
+      $('btn-place-order').disabled       = false;
+    }
+  });
+
+  function escXml(str) {
+    return str
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&apos;');
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────
+  loadInventory();
+  renderCart();
+</script>
+</body>
+</html>

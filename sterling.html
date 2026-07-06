@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IBM Sterling Order Management — Demo</title>
+  <!-- IBM Carbon Design System -->
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css" />
+  <!-- IBM Plex Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Overrides & Custom Layout ───────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --ibm-blue:      #0f62fe;
+      --ibm-navy:      #001141;
+      --ibm-header:    #161616;
+      --ibm-bg:        #f4f4f4;
+      --ibm-surface:   #ffffff;
+      --ibm-border:    #e0e0e0;
+      --ibm-muted:     #6f6f6f;
+      --ibm-text:      #161616;
+      --status-sched:  #f1c21b;
+      --status-sched-bg: #fdf6d3;
+      --status-rel:    #0043ce;
+      --status-rel-bg: #d0e2ff;
+      --status-ship:   #24a148;
+      --status-ship-bg:#defbe6;
+      --status-error:  #da1e28;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--ibm-bg);
+      color: var(--ibm-text);
+      font-size: 14px;
+    }
+
+    /* ── Top Header ──────────────────────────────────────────────── */
+    .ibm-header {
+      background: var(--ibm-header);
+      height: 48px;
+      display: flex; align-items: center;
+      padding: 0 0 0 16px;
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid #393939;
+    }
+    .header-name {
+      display: flex; align-items: center; gap: 12px;
+      color: #f4f4f4; font-size: 14px; font-weight: 400;
+      padding: 0 16px; height: 100%;
+      border-right: 1px solid #393939;
+      text-decoration: none;
+    }
+    .header-name strong { font-weight: 600; }
+    .header-name .ibm-logo {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px; font-weight: 500;
+      color: #78a9ff; letter-spacing: -0.02em;
+    }
+    .header-nav {
+      display: flex; align-items: center; height: 100%;
+      margin-left: 0;
+    }
+    .header-nav a {
+      color: #c6c6c6; font-size: 14px;
+      padding: 0 16px; height: 100%;
+      display: flex; align-items: center;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .header-nav a:hover { background: #2d2d2d; color: #f4f4f4; }
+    .header-nav a.active { border-bottom: 2px solid #78a9ff; color: #f4f4f4; }
+
+    .header-right-actions {
+      margin-left: auto; display: flex; align-items: center; gap: 0;
+      padding-right: 0;
+    }
+    .demo-badge {
+      background: #6929c4; color: #fff;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+      padding: 3px 10px; border-radius: 2px; margin-right: 16px;
+      text-transform: uppercase;
+    }
+    .header-user {
+      color: #c6c6c6; font-size: 13px;
+      padding: 0 16px; border-left: 1px solid #393939; height: 48px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .user-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #0043ce; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+    }
+
+    /* ── Shell ───────────────────────────────────────────────────── */
+    .shell { display: flex; min-height: calc(100vh - 48px); }
+
+    /* ── Left Sidebar ────────────────────────────────────────────── */
+    .sidebar {
+      width: 256px; flex-shrink: 0;
+      background: #262626;
+      padding-top: 0;
+    }
+    .sidebar-section {
+      padding: 16px 0 8px;
+      border-bottom: 1px solid #393939;
+    }
+    .sidebar-section-title {
+      color: #8d8d8d; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0 16px 8px;
+    }
+    .sidebar-link {
+      display: block; color: #c6c6c6; font-size: 14px;
+      padding: 10px 16px; text-decoration: none;
+      transition: background 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-link:hover { background: #353535; color: #f4f4f4; }
+    .sidebar-link.active {
+      background: #393939; color: #f4f4f4;
+      border-left-color: #78a9ff;
+    }
+    .sidebar-link .link-icon { margin-right: 12px; opacity: 0.6; }
+
+    /* ── Main Content ────────────────────────────────────────────── */
+    .main-content {
+      flex: 1; padding: 0;
+      display: flex; flex-direction: column;
+    }
+
+    /* ── Breadcrumb ──────────────────────────────────────────────── */
+    .breadcrumb-bar {
+      background: var(--ibm-surface);
+      border-bottom: 1px solid var(--ibm-border);
+      padding: 12px 32px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--ibm-muted);
+    }
+    .breadcrumb-bar a { color: var(--ibm-blue); text-decoration: none; }
+    .breadcrumb-bar a:hover { text-decoration: underline; }
+    .breadcrumb-sep { color: #c6c6c6; }
+
+    /* ── Page Header ─────────────────────────────────────────────── */
+    .page-header {
+      background: var(--ibm-surface);
+      border-bottom: 1px solid var(--ibm-border);
+      padding: 24px 32px 20px;
+    }
+    .page-header h1 {
+      font-size: 28px; font-weight: 300;
+      color: var(--ibm-text); margin-bottom: 4px;
+    }
+    .page-header p { font-size: 14px; color: var(--ibm-muted); }
+
+    /* ── Content Padding ─────────────────────────────────────────── */
+    .content-body { padding: 32px; flex: 1; }
+
+    /* ── Search Section ──────────────────────────────────────────── */
+    .search-section {
+      background: var(--ibm-surface);
+      border: 1px solid var(--ibm-border);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+    }
+    .search-section-title {
+      font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    }
+    .search-row {
+      display: flex; align-items: flex-end; gap: 16px;
+    }
+    .search-field { flex: 1; max-width: 400px; }
+    .search-field label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--ibm-text); margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    #input-order-search {
+      width: 100%; height: 40px;
+      background: var(--ibm-bg); border: 1px solid #8d8d8d;
+      border-bottom-color: var(--ibm-text);
+      padding: 0 16px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+      color: var(--ibm-text);
+      transition: border-color 0.15s;
+    }
+    #input-order-search:focus {
+      outline: 2px solid var(--ibm-blue); outline-offset: 0;
+      border-color: transparent;
+    }
+
+    #btn-search-order {
+      height: 40px; padding: 0 24px;
+      background: var(--ibm-blue); color: #fff;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer;
+      transition: background 0.15s;
+      display: flex; align-items: center; gap: 8px;
+      white-space: nowrap;
+    }
+    #btn-search-order:hover   { background: #0353e9; }
+    #btn-search-order:active  { background: #002d9c; }
+    #btn-search-order:disabled { background: #c6c6c6; cursor: not-allowed; }
+
+    .search-hint { margin-top: 8px; font-size: 12px; color: var(--ibm-muted); }
+
+    /* ── Inline Notification ─────────────────────────────────────── */
+    #order-error-msg {
+      display: none;
+      background: #fff1f1; border-left: 4px solid var(--status-error);
+      padding: 12px 16px; margin-bottom: 24px;
+      font-size: 14px; color: #521b18;
+      align-items: center; gap: 10px;
+    }
+    #order-error-msg.visible { display: flex; }
+    .notif-icon { font-size: 18px; }
+
+    /* ── Loading indicator ───────────────────────────────────────── */
+    #search-loading {
+      display: none; align-items: center; gap: 12px;
+      margin-bottom: 24px; color: var(--ibm-muted); font-size: 13px;
+    }
+    #search-loading.visible { display: flex; }
+    .loading-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #c6c6c6; border-top-color: var(--ibm-blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Order Detail Panel ──────────────────────────────────────── */
+    #order-detail-panel {
+      display: none; flex-direction: column; gap: 0;
+    }
+    #order-detail-panel.visible { display: flex; }
+
+    /* Panel title row */
+    .panel-title-row {
+      background: var(--ibm-surface);
+      border: 1px solid var(--ibm-border);
+      border-bottom: none;
+      padding: 20px 28px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .panel-order-id {
+      font-size: 22px; font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--ibm-text);
+    }
+    #order-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    #order-status.scheduled { background: var(--status-sched-bg); color: #7d5900; }
+    #order-status.released  { background: var(--status-rel-bg);   color: var(--status-rel); }
+    #order-status.shipped   { background: var(--status-ship-bg);  color: #0e6027; }
+
+    .panel-timestamp {
+      margin-left: auto; font-size: 12px; color: var(--ibm-muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* Tabs */
+    .panel-tabs {
+      background: var(--ibm-surface);
+      border: 1px solid var(--ibm-border);
+      border-bottom: none;
+      display: flex;
+      border-top: 1px solid var(--ibm-border);
+    }
+    .panel-tab {
+      padding: 12px 20px;
+      font-size: 14px; color: var(--ibm-muted);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all 0.15s; user-select: none;
+      text-decoration: none;
+    }
+    .panel-tab:hover { color: var(--ibm-text); background: #f4f4f4; }
+    .panel-tab.active {
+      color: var(--ibm-text); font-weight: 600;
+      border-bottom-color: var(--ibm-blue);
+      background: var(--ibm-surface);
+    }
+
+    /* Data grid */
+    .data-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0; border: 1px solid var(--ibm-border);
+    }
+    .data-tile {
+      background: var(--ibm-surface);
+      padding: 24px 28px;
+      border-right: 1px solid var(--ibm-border);
+      border-bottom: 1px solid var(--ibm-border);
+    }
+    .data-tile:nth-child(even) { border-right: none; }
+    .data-tile.full-width {
+      grid-column: 1 / -1; border-right: none;
+    }
+    .data-tile-title {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--ibm-muted);
+      margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--ibm-border);
+    }
+    .data-field { margin-bottom: 14px; }
+    .data-field:last-child { margin-bottom: 0; }
+    .data-field-label {
+      font-size: 11px; font-weight: 600; color: var(--ibm-muted);
+      text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;
+    }
+    .data-field-value {
+      font-size: 14px; color: var(--ibm-text);
+    }
+    .data-field-value.mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* Payment masked display */
+    .card-display {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .card-brand-badge {
+      background: #e8e8e8; border-radius: 3px;
+      padding: 3px 10px; font-size: 12px; font-weight: 700;
+      color: var(--ibm-text); letter-spacing: 0.04em;
+    }
+    .card-number-masked {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px; letter-spacing: 0.1em; color: var(--ibm-text);
+    }
+
+    /* ── Data table for order lines (non-functional, for realism) ── */
+    .order-lines-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .order-lines-table th {
+      text-align: left; padding: 10px 16px;
+      background: #f4f4f4; border: 1px solid var(--ibm-border);
+      font-weight: 600; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--ibm-muted);
+    }
+    .order-lines-table td {
+      padding: 12px 16px; border: 1px solid var(--ibm-border);
+      background: var(--ibm-surface); vertical-align: top;
+    }
+    .order-lines-table tr:hover td { background: #f9f9f9; }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    .ibm-footer {
+      background: #262626; color: #8d8d8d; font-size: 12px;
+      padding: 16px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid #393939; flex-wrap: wrap; gap: 8px;
+    }
+    .ibm-footer a { color: #78a9ff; text-decoration: none; }
+    .ibm-footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .content-body { padding: 20px; }
+      .data-grid { grid-template-columns: 1fr; }
+      .data-tile { border-right: none; }
+      .data-tile:nth-child(even) { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════ -->
+<header class="ibm-header">
+  <a class="header-name" href="#">
+    <span class="ibm-logo">IBM</span>
+    <strong>Sterling</strong> Order Management
+  </a>
+  <nav class="header-nav">
+    <a href="#" class="active">Orders</a>
+    <a href="#">Inventory</a>
+    <a href="#">Shipments</a>
+    <a href="#">Reports</a>
+  </nav>
+  <div class="header-right-actions">
+    <span class="demo-badge">Demo</span>
+    <div class="header-user">
+      <div class="user-avatar">AD</div>
+      Admin
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     SHELL (sidebar + content)
+══════════════════════════════════════════════ -->
+<div class="shell">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Order Management</div>
+      <a href="#" class="sidebar-link active">
+        <span class="link-icon">⊞</span> Order Search
+      </a>
+      <a href="#" class="sidebar-link">
+        <span class="link-icon">＋</span> Create Order
+      </a>
+      <a href="#" class="sidebar-link">
+        <span class="link-icon">⏱</span> Pending Orders
+      </a>
+      <a href="#" class="sidebar-link">
+        <span class="link-icon">✓</span> Released
+      </a>
+      <a href="#" class="sidebar-link">
+        <span class="link-icon">🚚</span> Shipped
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Fulfillment</div>
+      <a href="#" class="sidebar-link">Picking Queue</a>
+      <a href="#" class="sidebar-link">Shipment Confirmations</a>
+      <a href="#" class="sidebar-link">Return Authorizations</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Configuration</div>
+      <a href="#" class="sidebar-link">Pipelines</a>
+      <a href="#" class="sidebar-link">Rules Engine</a>
+      <a href="#" class="sidebar-link">Agents</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main-content">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-bar">
+      <a href="#">Home</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="#">Order Management</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>Order Search</span>
+    </div>
+
+    <!-- Page header -->
+    <div class="page-header">
+      <h1>Order Search</h1>
+      <p>Search and manage customer orders across all channels and fulfillment nodes.</p>
+    </div>
+
+    <!-- Body -->
+    <div class="content-body">
+
+      <!-- Search card -->
+      <div class="search-section">
+        <div class="search-section-title">Search by Order Number</div>
+        <div class="search-row">
+          <div class="search-field">
+            <label for="input-order-search">Order Number</label>
+            <input id="input-order-search"
+                   type="text"
+                   placeholder="e.g. ORD-A1B2C3D4"
+                   autocomplete="off"
+                   spellcheck="false" />
+          </div>
+          <button id="btn-search-order" type="button">
+            <svg style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.5;" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Search
+          </button>
+        </div>
+        <p class="search-hint">Enter the full order number in the format <strong>ORD-XXXXXXXX</strong></p>
+      </div>
+
+      <!-- Loading -->
+      <div id="search-loading">
+        <div class="loading-spinner"></div>
+        <span>Retrieving order details…</span>
+      </div>
+
+      <!-- Error notification -->
+      <div id="order-error-msg" role="alert">
+        <span class="notif-icon">⚠</span>
+        <span id="order-error-text">Order not found.</span>
+      </div>
+
+      <!-- ── Order Detail Panel ── -->
+      <div id="order-detail-panel" aria-live="polite">
+
+        <!-- Title row -->
+        <div class="panel-title-row">
+          <div class="panel-order-id" id="panel-order-id-heading">—</div>
+          <div id="order-status" class="scheduled">● Scheduled</div>
+          <div class="panel-timestamp" id="order-created-at">Created: —</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="panel-tabs">
+          <div class="panel-tab active" id="tab-summary">Order Summary</div>
+          <div class="panel-tab" id="tab-lines">Order Lines</div>
+          <div class="panel-tab" id="tab-shipments">Shipments</div>
+          <div class="panel-tab" id="tab-payments">Payments</div>
+        </div>
+
+        <!-- Data Grid -->
+        <div class="data-grid" id="tab-summary-content">
+
+          <!-- Order Info tile -->
+          <div class="data-tile">
+            <div class="data-tile-title">Order Information</div>
+            <div class="data-field">
+              <div class="data-field-label">Order Number</div>
+              <div class="data-field-value mono" id="order-id-display">—</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Order Status</div>
+              <div class="data-field-value" id="order-status-text">—</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Product ID</div>
+              <div class="data-field-value mono" id="order-product-id">—</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Quantity</div>
+              <div class="data-field-value" id="order-quantity">—</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Order Total</div>
+              <div class="data-field-value">$349.00</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Last Updated</div>
+              <div class="data-field-value mono" id="order-updated-at">—</div>
+            </div>
+          </div>
+
+          <!-- Customer tile -->
+          <div class="data-tile">
+            <div class="data-tile-title">Customer &amp; Shipping</div>
+            <div class="data-field">
+              <div class="data-field-label">Customer Name</div>
+              <div class="data-field-value" id="order-customer-name">—</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Email Address</div>
+              <div class="data-field-value" id="order-customer-email">—</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Shipping Address</div>
+              <div class="data-field-value" id="order-address">—</div>
+            </div>
+          </div>
+
+          <!-- Payment tile -->
+          <div class="data-tile">
+            <div class="data-tile-title">Payment</div>
+            <div class="data-field">
+              <div class="data-field-label">Payment Method</div>
+              <div class="data-field-value" id="order-payment">
+                <div class="card-display">
+                  <span class="card-brand-badge" id="order-card-brand">—</span>
+                  <span class="card-number-masked" id="order-card-masked">•••• •••• •••• ————</span>
+                </div>
+              </div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Payment Status</div>
+              <div class="data-field-value">Authorized</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Amount</div>
+              <div class="data-field-value">$349.00 USD</div>
+            </div>
+          </div>
+
+          <!-- Fulfillment tile -->
+          <div class="data-tile">
+            <div class="data-tile-title">Fulfillment</div>
+            <div class="data-field">
+              <div class="data-field-label">Fulfillment Type</div>
+              <div class="data-field-value">Ship to Customer</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Fulfillment Node</div>
+              <div class="data-field-value mono">WH-EAST-01</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Carrier</div>
+              <div class="data-field-value" id="order-carrier">FedEx Ground</div>
+            </div>
+            <div class="data-field">
+              <div class="data-field-label">Tracking Number</div>
+              <div class="data-field-value mono" id="order-tracking">—</div>
+            </div>
+          </div>
+
+        </div><!-- /data-grid -->
+
+        <!-- Order Lines tab content (non-functional realism) -->
+        <div id="tab-lines-content" style="display:none;
+             border:1px solid var(--ibm-border); border-top:none; background:var(--ibm-surface); padding:24px 28px;">
+          <table class="order-lines-table">
+            <thead>
+              <tr>
+                <th>Line #</th>
+                <th>Product ID</th>
+                <th>Description</th>
+                <th>Qty Ordered</th>
+                <th>Qty Shipped</th>
+                <th>Unit Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td class="mono" id="line-product-id">VERTEX-AIR-360</td>
+                <td>Vertex Air 360 Limited Edition Sneaker</td>
+                <td id="line-qty">1</td>
+                <td>0</td>
+                <td>$349.00</td>
+                <td id="line-status">Scheduled</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Shipments tab content (non-functional realism) -->
+        <div id="tab-shipments-content" style="display:none;
+             border:1px solid var(--ibm-border); border-top:none; background:var(--ibm-surface); padding:24px 28px;">
+          <table class="order-lines-table">
+            <thead>
+              <tr>
+                <th>Shipment #</th>
+                <th>Status</th>
+                <th>Carrier</th>
+                <th>Tracking No.</th>
+                <th>Ship Date</th>
+                <th>Est. Delivery</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="ship-shipment-no" class="mono">—</td>
+                <td id="ship-status">Pending</td>
+                <td id="ship-carrier">FedEx Ground</td>
+                <td class="mono" id="ship-tracking">—</td>
+                <td id="ship-date">—</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Payments tab content (non-functional realism) -->
+        <div id="tab-payments-content" style="display:none;
+             border:1px solid var(--ibm-border); border-top:none; background:var(--ibm-surface); padding:24px 28px;">
+          <table class="order-lines-table">
+            <thead>
+              <tr>
+                <th>Payment ID</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">PMT-0001</td>
+                <td id="pay-method">—</td>
+                <td>$349.00</td>
+                <td>Authorized</td>
+                <td id="pay-date">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /#order-detail-panel -->
+
+    </div><!-- /.content-body -->
+
+    <!-- Footer -->
+    <footer class="ibm-footer">
+      <span>IBM Sterling Order Management v10.0 — Demo Environment</span>
+      <span>
+        <a href="#">Help</a> &nbsp;·&nbsp;
+        <a href="#">Privacy</a> &nbsp;·&nbsp;
+        © 2025 IBM Corporation
+      </span>
+    </footer>
+
+  </div><!-- /.main-content -->
+</div><!-- /.shell -->
+
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+  // ── CONFIG ───────────────────────────────────────────────────────
+  const API_BASE = 'http://localhost:8000';
+  // To deploy to AWS: replace with your API Gateway Invoke URL
+  // e.g. const API_BASE = 'https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod';
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  const $  = id => document.getElementById(id);
+  const qs = sel => document.querySelector(sel);
+
+  function xmlText(doc, tag) {
+    const el = doc.querySelector(tag);
+    return el ? el.textContent.trim() : '—';
+  }
+
+  function formatDate(iso) {
+    if (!iso || iso === '—') return '—';
+    try {
+      return new Date(iso).toLocaleString('en-US', {
+        year:'numeric', month:'short', day:'numeric',
+        hour:'2-digit', minute:'2-digit', timeZoneName:'short'
+      });
+    } catch { return iso; }
+  }
+
+  // ── Tab switching ──────────────────────────────────────────────────
+  const tabs = [
+    { tab: 'tab-summary',   content: 'tab-summary-content'   },
+    { tab: 'tab-lines',     content: 'tab-lines-content'     },
+    { tab: 'tab-shipments', content: 'tab-shipments-content' },
+    { tab: 'tab-payments',  content: 'tab-payments-content'  },
+  ];
+  tabs.forEach(({ tab, content }) => {
+    $(tab).addEventListener('click', () => {
+      tabs.forEach(t => {
+        $(t.tab).classList.remove('active');
+        $(t.content).style.display = 'none';
+      });
+      $(tab).classList.add('active');
+      $(content).style.display = 'block';
+    });
+  });
+
+  // ── Status badge ───────────────────────────────────────────────────
+  function setStatus(status) {
+    const badge = $('order-status');
+    badge.classList.remove('scheduled','released','shipped');
+    const s = status.toLowerCase();
+    if (s === 'scheduled') {
+      badge.classList.add('scheduled');
+      badge.textContent = '● Scheduled';
+    } else if (s === 'released') {
+      badge.classList.add('released');
+      badge.textContent = '● Released';
+    } else if (s === 'shipped') {
+      badge.classList.add('shipped');
+      badge.textContent = '● Shipped';
+    } else {
+      badge.textContent = '● ' + status;
+    }
+    $('order-status-text').textContent = status;
+    $('line-status').textContent        = status;
+    $('ship-status').textContent        = status === 'Shipped' ? 'Shipped' : 'Pending';
+  }
+
+  // ── Search ─────────────────────────────────────────────────────────
+  async function searchOrder(orderId) {
+    orderId = orderId.trim().toUpperCase();
+    if (!orderId) return;
+
+    // Reset UI
+    $('order-detail-panel').classList.remove('visible');
+    $('order-error-msg').classList.remove('visible');
+    $('search-loading').classList.add('visible');
+    $('btn-search-order').disabled = true;
+
+    try {
+      const res  = await fetch(`${API_BASE}/orders/${orderId}`);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const xml  = parser.parseFromString(text, 'application/xml');
+
+      if (!res.ok || xml.querySelector('Error')) {
+        const msg = xml.querySelector('Message');
+        $('order-error-text').textContent = msg
+          ? msg.textContent
+          : `Order "${orderId}" not found. Check the order number and try again.`;
+        $('order-error-msg').classList.add('visible');
+        return;
+      }
+
+      // ── Populate fields ──────────────────────────────────────────
+      const status   = xmlText(xml, 'Status');
+      const orderNo  = xmlText(xml, 'OrderId');
+      const created  = xmlText(xml, 'CreatedAt');
+      const updated  = xmlText(xml, 'UpdatedAt');
+      const name     = xmlText(xml, 'Name');
+      const email    = xmlText(xml, 'Email');
+      const addr1    = xmlText(xml, 'AddressLine1');
+      const city     = xmlText(xml, 'City');
+      const state    = xmlText(xml, 'State');
+      const zip      = xmlText(xml, 'Zip');
+      const country  = xmlText(xml, 'Country');
+      const cardType = xmlText(xml, 'CardType');
+      const last4    = xmlText(xml, 'CardLast4');
+      const product  = xmlText(xml, 'ProductId');
+      const qty      = xmlText(xml, 'Quantity');
+
+      $('panel-order-id-heading').textContent = orderNo;
+      $('order-id-display').textContent       = orderNo;
+      $('order-created-at').textContent       = 'Created: ' + formatDate(created);
+      $('order-updated-at').textContent       = formatDate(updated);
+      $('order-customer-name').textContent    = name;
+      $('order-customer-email').textContent   = email;
+      $('order-address').innerHTML            =
+        `${addr1}<br/>${city}, ${state} ${zip}<br/>${country}`;
+      $('order-product-id').textContent       = product;
+      $('order-quantity').textContent         = qty;
+      $('order-card-brand').textContent       = cardType || '—';
+      $('order-card-masked').textContent      = `•••• •••• •••• ${last4}`;
+      $('line-product-id').textContent        = product;
+      $('line-qty').textContent               = qty;
+      $('pay-method').textContent             = `${cardType} •••• ${last4}`;
+      $('pay-date').textContent               = formatDate(created);
+
+      setStatus(status);
+
+      // Reset to summary tab
+      tabs.forEach(t => {
+        $(t.tab).classList.remove('active');
+        $(t.content).style.display = 'none';
+      });
+      $('tab-summary').classList.add('active');
+      $('tab-summary-content').style.display = 'block';
+
+      $('order-detail-panel').classList.add('visible');
+      sessionStorage.setItem('lastOrderId', orderNo);
+
+    } catch (err) {
+      $('order-error-text').textContent =
+        'Network error: ' + err.message + '. Check that API_BASE is configured correctly.';
+      $('order-error-msg').classList.add('visible');
+    } finally {
+      $('search-loading').classList.remove('visible');
+      $('btn-search-order').disabled = false;
+    }
+  }
+
+  // ── Events ─────────────────────────────────────────────────────────
+  $('btn-search-order').addEventListener('click', () => {
+    searchOrder($('input-order-search').value);
+  });
+
+  $('input-order-search').addEventListener('keydown', e => {
+    if (e.key === 'Enter') searchOrder(e.target.value);
+  });
+
+  // ── Auto-fill from sessionStorage ─────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = sessionStorage.getItem('lastOrderId');
+    if (saved) {
+      $('input-order-search').value = saved;
+      // auto-search after a brief delay so page is fully rendered
+      setTimeout(() => searchOrder(saved), 300);
+    }
+  });
+</script>
+</body>
+</html>
