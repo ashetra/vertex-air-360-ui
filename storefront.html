@@ -58,11 +58,6 @@
       color: #f4f4f4;
       display: flex; align-items: center; gap: 10px;
     }
-    .logo-ibm {
-      font-family: 'IBM Plex Mono', monospace;
-      color: #78a9ff; font-size: 14px;
-    }
-
     .nav-links { display: flex; gap: 0; }
     .nav-links a {
       font-size: 14px; font-weight: 400;
@@ -378,14 +373,19 @@
     }
 
     /* Card icons row */
-    .card-icons { display: flex; gap: 6px; align-items: center; margin-top: -6px; }
+    .card-icons { display: flex; gap: 8px; align-items: center; margin-top: -4px; }
     .card-icon-chip {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 2px; padding: 3px 8px;
-      font-size: 11px; font-weight: 700; color: var(--muted);
-      font-family: 'IBM Plex Mono', monospace;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 6px; padding: 4px 10px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0.35; transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .card-icon-chip.detected { border-color: var(--blue); color: var(--blue); background: #edf5ff; }
+    .card-icon-chip svg { display: block; }
+    .card-icon-chip.detected {
+      opacity: 1;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px #d0e2ff;
+    }
 
     /* Order summary in modal */
     .order-summary-bar {
@@ -502,7 +502,6 @@
 ══════════════════════════════════════════════ -->
 <header>
   <div class="logo">
-    <span class="logo-ibm">IBM</span>
     Vertex Air
   </div>
   <nav class="nav-links">
@@ -526,7 +525,7 @@
 
     <!-- Left: Image -->
     <div class="image-wrapper">
-      <img id="product-image" src="sneaker-placeholder.jpg"
+      <img id="product-image" src="assets/sneaker-placeholder.jpg"
            alt="Vertex Air 360 Limited Edition Sneaker"
            onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex'" />
       <!-- SVG fallback shown when real image is missing -->
@@ -731,9 +730,26 @@
         </div>
 
         <div class="card-icons">
-          <div class="card-icon-chip" id="chip-visa">VISA</div>
-          <div class="card-icon-chip" id="chip-mc">MC</div>
-          <div class="card-icon-chip" id="chip-amex">AMEX</div>
+          <!-- Visa -->
+          <div class="card-icon-chip" id="chip-visa" title="Visa">
+            <svg width="38" height="12" viewBox="0 0 38 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <text x="0" y="11" font-family="Arial,sans-serif" font-size="13" font-weight="700" font-style="italic" fill="#1A1F71" letter-spacing="-0.5">VISA</text>
+            </svg>
+          </div>
+          <!-- Mastercard -->
+          <div class="card-icon-chip" id="chip-mc" title="Mastercard">
+            <svg width="38" height="24" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="12" r="10" fill="#EB001B"/>
+              <circle cx="24" cy="12" r="10" fill="#F79E1B"/>
+              <path d="M19 4.8a10 10 0 0 1 0 14.4A10 10 0 0 1 19 4.8z" fill="#FF5F00"/>
+            </svg>
+          </div>
+          <!-- Amex -->
+          <div class="card-icon-chip" id="chip-amex" title="American Express">
+            <svg width="44" height="14" viewBox="0 0 44 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <text x="0" y="12" font-family="Arial,sans-serif" font-size="11" font-weight="800" fill="#2557D6" letter-spacing="0.5">AMEX</text>
+            </svg>
+          </div>
         </div>
 
         <div class="form-row-2">
@@ -816,9 +832,10 @@
 ══════════════════════════════════════════════ -->
 <script>
   // ── CONFIG ───────────────────────────────────────────────────────
+  // Local dev:           'http://localhost:8000'
+  // AWS Lambda:          'https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod'
+  // Container/OpenShift: '/api'
   const API_BASE = 'https://2lp9ne3001.execute-api.eu-north-1.amazonaws.com/prod';
-  // To deploy to AWS: replace with your API Gateway Invoke URL
-  // e.g. const API_BASE = 'https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/prod';
 
   const PRODUCT_PRICE = 349;
 
@@ -1139,7 +1156,7 @@
       updateStepIndicator(3);
 
     } catch (err) {
-      alert('Order failed: ' + err.message + '\n\nCheck that the local server is running on port 8000.');
+      alert('Order failed: ' + err.message + '\n\nPlease try again.');
     } finally {
       $('spinner-checkout').style.display = 'none';
       $('place-order-label').textContent  = 'Place Order';
